@@ -6,8 +6,8 @@ function Confirmation() {
 
   if (!bookingData) {
     return (
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <div className="mx-auto max-w-lg rounded-3xl border border-slate-100 bg-white p-12 text-center shadow-xl">
+      <div className="mx-auto max-w-6xl px-4 py-16 animate-fade-in-up">
+        <div className="mx-auto max-w-lg rounded-3xl border border-white/60 bg-white/70 backdrop-blur-xl p-12 text-center shadow-xl">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-6">
             <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
           </div>
@@ -18,7 +18,7 @@ function Confirmation() {
           </p>
           <Link
             to="/"
-            className="mt-8 inline-flex justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] hover:from-indigo-700 hover:to-purple-700"
+            className="mt-8 inline-flex justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02] hover:from-emerald-600 hover:to-teal-700"
           >
             Back to Home
           </Link>
@@ -30,7 +30,7 @@ function Confirmation() {
   const { name, eventName, ticketCount, totalAmount, bookingId } = bookingData
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-16">
+    <div className="mx-auto max-w-6xl px-4 py-16 animate-fade-in-up">
       <div className="mx-auto max-w-lg text-center">
         <div className="relative mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-xl shadow-emerald-200">
           <div className="absolute inset-0 animate-ping rounded-full bg-emerald-400 opacity-25"></div>
@@ -57,8 +57,8 @@ function Confirmation() {
           email can be added in a future iteration.
         </p>
 
-        <div className="relative mt-12 overflow-hidden rounded-3xl border border-slate-100 bg-white p-8 sm:p-10 text-left shadow-2xl">
-          <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
+        <div className="relative mt-12 overflow-hidden rounded-3xl border border-white/60 bg-white/80 backdrop-blur-xl p-8 sm:p-10 text-left shadow-2xl">
+          <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
           
           <div className="flex justify-between items-end border-b-2 border-dashed border-slate-200 pb-6">
             <div>
@@ -87,7 +87,7 @@ function Confirmation() {
             </div>
           </dl>
           
-          <div className="mt-6 flex items-center justify-between rounded-2xl bg-emerald-50 p-6 pt-5 pb-5">
+          <div className="mt-6 flex items-center justify-between rounded-2xl bg-emerald-50/80 backdrop-blur-sm border border-emerald-100 p-6 pt-5 pb-5">
             <dt className="text-lg font-extrabold uppercase tracking-widest text-emerald-800">
               Total Paid
             </dt>
@@ -97,8 +97,8 @@ function Confirmation() {
           </div>
           
           {/* subtle cutouts for receipt effect */}
-          <div className="absolute -left-3 bottom-24 h-6 w-6 rounded-full bg-slate-50 shadow-inner"></div>
-          <div className="absolute -right-3 bottom-24 h-6 w-6 rounded-full bg-slate-50 shadow-inner"></div>
+          <div className="absolute -left-3 bottom-24 h-6 w-6 rounded-full bg-slate-50/50 shadow-inner"></div>
+          <div className="absolute -right-3 bottom-24 h-6 w-6 rounded-full bg-slate-50/50 shadow-inner"></div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -110,7 +110,7 @@ function Confirmation() {
           </Link>
           <Link
             to="/booking"
-            className="inline-flex w-full justify-center rounded-xl border-2 border-slate-200 bg-white px-8 py-4 text-base font-bold text-slate-700 shadow-sm transition-all hover:bg-slate-50 hover:border-slate-300 sm:w-auto"
+            className="inline-flex w-full justify-center rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm px-8 py-4 text-base font-bold text-slate-700 shadow-sm transition-all hover:bg-white hover:border-slate-300 sm:w-auto"
           >
             Book another
           </Link>

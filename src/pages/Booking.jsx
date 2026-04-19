@@ -131,7 +131,7 @@ function Booking() {
   const inputError =
     'border-red-400 bg-red-50 focus:border-red-500 focus:bg-white focus:ring-4 focus:ring-red-500/20'
   const inputNormal =
-    'border-slate-200 bg-slate-50 hover:bg-slate-100 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/20'
+    'border-slate-200 bg-white/50 backdrop-blur-sm hover:bg-white focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-400/20'
 
   const ticketLabel =
     ticketsLoading || availableTickets === null
@@ -153,7 +153,7 @@ function Booking() {
               <span className="text-slate-500 text-sm">per ticket</span>
             </span>
             <span className="hidden sm:inline text-slate-300">•</span>
-            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-bold shadow-sm ${soldOut ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}`}>{ticketLabel}</span>
+            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-bold shadow-sm ${soldOut ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200'}`}>{ticketLabel}</span>
           </p>
         </div>
 
@@ -198,10 +198,10 @@ function Booking() {
 
         <form
           onSubmit={handleSubmit}
-          className="relative mt-10 space-y-8 overflow-hidden rounded-3xl border border-slate-100 bg-white p-8 shadow-2xl sm:p-12"
+          className="relative mt-10 space-y-8 overflow-hidden rounded-2xl border border-white/60 bg-white/70 p-8 shadow-xl backdrop-blur-md sm:p-12 animate-fade-in-up"
         >
           {/* Decorative top border */}
-          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
           
           <div>
             <label
@@ -316,14 +316,14 @@ function Booking() {
           <div className="flex flex-col-reverse gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100">
             <Link
               to="/event"
-              className="text-center text-sm font-bold text-indigo-600 transition hover:text-indigo-800 uppercase tracking-wide"
+              className="text-center text-sm font-bold text-emerald-600 transition hover:text-emerald-800 uppercase tracking-wide"
             >
               Review event details
             </Link>
             <button
               type="submit"
               disabled={!ready || soldOut || submitting}
-              className="inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] hover:from-indigo-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-400 disabled:shadow-none disabled:hover:scale-100 sm:w-auto"
+              className="inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02] hover:from-emerald-600 hover:to-teal-700 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-400 disabled:shadow-none disabled:hover:scale-100 sm:w-auto animate-fade-in"
             >
               {submitting
                 ? 'Processing…'

@@ -241,19 +241,19 @@ function Home() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {[
               {
-                name: 'Sarah Jenkins',
+                name: 'Prince Kumar',
                 role: 'Senior Developer',
                 feedback: 'The hands-on workshops completely changed how my team approaches testing. Worth every minute!',
                 stars: 5,
               },
               {
-                name: 'Marcus Thorne',
+                name: 'Suhash Vishwakarma',
                 role: 'Product Manager',
                 feedback: 'Fantastic networking. I connected with leaders from 4 different departments and uncovered huge synergies.',
                 stars: 5,
               },
               {
-                name: 'Priya Sharma',
+                name: 'Raunak Singh',
                 role: 'Faculty Educator',
                 feedback: 'The keynote was incredibly inspiring! Impeccably organized event from start to finish.',
                 stars: 5,

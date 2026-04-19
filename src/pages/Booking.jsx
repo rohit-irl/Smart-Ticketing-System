@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { EVENT_NAME, PRICE_PER_TICKET } from '../constants/bookingConfig'
 import {
   fetchTicketAvailability,
@@ -19,6 +19,11 @@ function getInitialForm() {
 
 function Booking() {
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  const preselectedEvent = location.state?.selectedEvent
+  const currentEventName = preselectedEvent ? preselectedEvent.name : EVENT_NAME
+  const currentEventPrice = preselectedEvent ? preselectedEvent.price : PRICE_PER_TICKET
 
   const [form, setForm] = useState(getInitialForm)
   const [errors, setErrors] = useState({})
@@ -32,15 +37,19 @@ function Booking() {
     setTicketsLoading(true)
     setLoadError(null)
     try {
-      const data = await fetchTicketAvailability()
-      setAvailableTickets(data.availableTickets)
+      if (preselectedEvent) {
+         setAvailableTickets(preselectedEvent.availableTickets)
+      } else {
+         const data = await fetchTicketAvailability()
+         setAvailableTickets(data.availableTickets)
+      }
     } catch (err) {
       setLoadError(err.message || 'Could not load ticket availability.')
       setAvailableTickets(null)
     } finally {
       setTicketsLoading(false)
     }
-  }, [])
+  }, [preselectedEvent])
 
   useEffect(() => {
     loadTickets()
@@ -115,9 +124,9 @@ function Booking() {
         state: {
           booking: {
             name: b.name,
-            eventName: EVENT_NAME,
+            eventName: currentEventName,
             ticketCount: b.tickets,
-            totalAmount: b.tickets * PRICE_PER_TICKET,
+            totalAmount: b.tickets * currentEventPrice,
             bookingId: b._id,
           },
         },
@@ -146,10 +155,10 @@ function Booking() {
         <div className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Book Tickets</h1>
           <p className="mt-4 text-lg text-slate-600 flex flex-wrap justify-center items-center gap-2">
-            <span className="font-medium text-slate-900">{EVENT_NAME}</span>
+            <span className="font-medium text-slate-900">{currentEventName}</span>
             <span className="hidden sm:inline text-slate-300">•</span>
             <span>
-              <span className="font-bold text-slate-800">${PRICE_PER_TICKET}</span>{' '}
+              <span className="font-bold text-slate-800">${currentEventPrice}</span>{' '}
               <span className="text-slate-500 text-sm">per ticket</span>
             </span>
             <span className="hidden sm:inline text-slate-300">•</span>
@@ -215,7 +224,7 @@ function Booking() {
               name="name"
               type="text"
               autoComplete="name"
-              placeholder="Jane Doe"
+              placeholder="Rohit Raj"
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               disabled={!ready || soldOut || submitting}
@@ -240,7 +249,7 @@ function Booking() {
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="jane.doe@department.example"
+              placeholder="rohit@department.example"
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
               disabled={!ready || soldOut || submitting}

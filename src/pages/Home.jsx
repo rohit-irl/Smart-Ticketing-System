@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { EVENT_NAME, PRICE_PER_TICKET } from '../constants/bookingConfig'
+import { EVENT_NAME, PRICE_PER_TICKET, SAMPLE_EVENTS } from '../constants/bookingConfig'
 
 function Home() {
   return (
@@ -25,70 +25,56 @@ function Home() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
               </span>
-              Registrations Open 2026
+              {SAMPLE_EVENTS.length}+ Events Available
             </div>
             
             <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.1] sm:text-6xl lg:text-7xl">
-              Experience the Future at <br className="hidden md:block" />
+              Discover & Book Amazing <br className="hidden md:block" />
               <span className="bg-gradient-to-r from-emerald-500 to-teal-400 bg-clip-text text-transparent">
-                {EVENT_NAME}
+                Events
               </span>
             </h1>
             
             <p className="max-w-2xl text-xl text-slate-600 leading-relaxed">
-              Connect with visionary leaders, participate in hands-on workshops, and celebrate internal milestones at our biggest showcase of the year.
+              Browse and book tickets for multiple department events, workshops, and tech sessions all in one place.
             </p>
             
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Link
-                to="/booking"
+                to="/event"
                 className="inline-flex h-14 items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-8 text-lg font-bold text-white shadow-lg shadow-emerald-200 transition-all duration-300 hover:scale-105 hover:shadow-emerald-300 hover:from-emerald-600 hover:to-teal-700"
               >
-                Book Now
+                Browse Events
               </Link>
               <Link
-                to="/event"
+                to="/booking"
                 className="inline-flex h-14 items-center justify-center rounded-xl border-2 border-slate-200 bg-white/50 backdrop-blur-sm px-8 text-lg font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-slate-300 hover:bg-slate-50"
               >
-                Explore Event
+                Book Tickets
               </Link>
             </div>
           </div>
 
-          {/* Right Floating Glassmorphism Card */}
+          {/* Right Floating Glassmorphism Cards */}
           <div className="relative mx-auto w-full max-w-md lg:ml-auto lg:mr-0 animate-fade-in">
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-emerald-400 to-teal-300 opacity-30 blur-lg"></div>
-            <div className="relative flex flex-col gap-6 rounded-3xl border border-white/40 bg-white/60 p-8 shadow-2xl backdrop-blur-xl">
-              
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-emerald-400 to-teal-300 opacity-30 blur-xl"></div>
+            <div className="relative flex flex-col gap-4">
+              {SAMPLE_EVENTS.slice(0, 3).map((event, idx) => (
+                <div key={idx} className="group flex flex-col gap-2 rounded-2xl border border-white/60 bg-white/70 p-5 shadow-lg backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-emerald-100/50">
+                  <div className="flex justify-between items-start gap-4">
+                    <h3 className="font-bold text-slate-900 transition-colors group-hover:text-emerald-600">{event.name}</h3>
+                    <span className="shrink-0 inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 ring-1 ring-inset ring-emerald-500/20">
+                      {event.availableTickets} left
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-slate-500 font-medium">
+                    <span className="flex items-center gap-1.5">
+                      <svg className="h-4 w-4 text-emerald-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      <span className="truncate">{event.date}</span>
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">Date</p>
-                  <p className="text-lg font-bold text-slate-900">June 15–16, 2026</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-600">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">Venue</p>
-                  <p className="text-lg font-bold text-slate-900">Main Campus Auditorium</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" /></svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-wider text-slate-500">Tickets</p>
-                  <p className="text-lg font-bold text-slate-900">Limited Availability</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -101,7 +87,7 @@ function Home() {
       */}
       <section className="mx-auto max-w-7xl px-6 py-20 lg:py-28">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Why Attend This Event?</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Why Attend Our Events?</h2>
           <p className="mt-4 text-lg text-slate-600">Unlock your potential with immersive experiences tailored for modern professionals.</p>
         </div>
 
@@ -151,14 +137,14 @@ function Home() {
           <div className="lg:w-1/2">
             <h2 className="text-3xl font-extrabold sm:text-4xl">Secure Your Access</h2>
             <p className="mt-4 text-xl text-slate-300">
-              Join hundreds of other professionals. Tickets are selling fast, so don't wait until the last minute.
+              Join thousands of professionals across all our departmental programs. Seats for premium sessions sell out fast, so don't wait.
             </p>
             <ul className="mt-8 space-y-4 text-slate-300">
               {[
-                'Full access to all keynote sessions',
-                'Entry to interactive workshop tracks',
+                'Access to specialized tracks and workshops',
+                'Entry to multi-department seminars',
                 'Complimentary lunch and refreshments',
-                'Exclusive swag bag & event badge'
+                'Exclusive networking and digital perks'
               ].map((perk, idx) => (
                 <li key={idx} className="flex items-center gap-3">
                   <svg className="h-6 w-6 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
@@ -175,8 +161,8 @@ function Home() {
                   Most Popular
                 </span>
               </div>
-              <h3 className="text-2xl font-bold">Standard Pass</h3>
-              <p className="mt-2 text-slate-400">Everything you need for the summit.</p>
+              <h3 className="text-2xl font-bold">Featured Event Pass</h3>
+              <p className="mt-2 text-slate-400">Secure entry to our most popular upcoming session.</p>
               <div className="mt-6 flex items-baseline gap-2">
                 <span className="text-5xl font-extrabold tracking-tight text-white">${PRICE_PER_TICKET}</span>
                 <span className="text-xl font-medium text-slate-400">/ person</span>
@@ -199,8 +185,8 @@ function Home() {
       */}
       <section className="mx-auto max-w-4xl px-6 py-20 lg:py-28">
         <div className="text-center mb-16">
-          <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Event Schedule</h2>
-          <p className="mt-4 text-lg text-slate-600">A structured timeline of our dynamic 2-day summit.</p>
+          <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Typical Event Schedule</h2>
+          <p className="mt-4 text-lg text-slate-600">Here's what a standard day looks like at our larger workshops and seminars.</p>
         </div>
 
         <div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-1 before:bg-gradient-to-b before:from-emerald-400 before:to-teal-200">
@@ -283,6 +269,69 @@ function Home() {
 
       {/* 
         ====================================================
+        ✨ MORE UPCOMING EVENTS
+        ==================================================== 
+      */}
+      <section className="bg-slate-50 px-6 py-20 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">Explore Upcoming Events</h2>
+            <p className="mt-4 text-lg text-slate-600">Find the perfect workshop, seminar, or bootcamp to accelerate your growth.</p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {SAMPLE_EVENTS.map((event) => (
+              <div key={event.id} className="group flex flex-col rounded-2xl bg-white p-8 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-slate-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-100/60">
+                <div className="mb-4 inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-600 ring-1 ring-inset ring-emerald-500/20 w-fit">
+                  {event.department}
+                </div>
+                <h3 className="text-2xl font-bold tracking-tight text-slate-900 transition-colors group-hover:text-emerald-600">{event.name}</h3>
+                
+                <div className="mt-6 flex flex-col gap-3 flex-1 text-slate-600">
+                  <div className="flex items-center gap-3 text-sm">
+                    <svg className="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    <span className="font-medium">{event.date}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm">
+                    <svg className="h-5 w-5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    <span>{event.venue}</span>
+                  </div>
+                  <div className="flex justify-between items-center mt-auto pt-6 border-t border-slate-100">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-extrabold text-slate-900">${event.price}</span>
+                    </div>
+                    {event.availableTickets < 30 ? (
+                      <span className="text-sm font-bold text-orange-500">{event.availableTickets} left!</span>
+                    ) : (
+                      <span className="text-sm font-bold text-emerald-600 text-right">{event.availableTickets} available</span>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-6 flex flex-col gap-3">
+                  <Link
+                    to="/event"
+                    state={{ viewEventId: event.id }}
+                    onClick={() => { window.scrollTo(0, 0) }}
+                    className="inline-flex w-full items-center justify-center rounded-xl border border-emerald-400 bg-transparent px-6 py-2.5 text-sm font-bold text-emerald-600 transition-all duration-300 hover:bg-emerald-50 hover:shadow-md"
+                  >
+                    View Details
+                  </Link>
+                  <Link
+                    to="/booking"
+                    state={{ selectedEvent: event }}
+                    className="inline-flex w-full items-center justify-center rounded-xl bg-slate-100 px-6 py-2.5 text-sm font-bold text-slate-700 transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-emerald-500 group-hover:to-teal-500 group-hover:text-white group-hover:shadow-lg group-hover:shadow-emerald-200"
+                  >
+                    Book Now
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 
+        ====================================================
         5️⃣ CALL TO ACTION
         ==================================================== 
       */}
@@ -290,7 +339,7 @@ function Home() {
         <div className="absolute inset-0 opacity-10"></div>
         <div className="relative z-10 mx-auto max-w-3xl">
           <h2 className="text-4xl font-extrabold text-white tracking-tight sm:text-5xl">
-            Don't miss out — book your seat now!
+            Don't miss out — book your tickets now!
           </h2>
           <p className="mt-6 text-xl text-emerald-100">
             Join the top minds and transform your career. Spaces are strictly limited.

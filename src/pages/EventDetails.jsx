@@ -1,10 +1,33 @@
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useBooking } from '../context/BookingContext'
+import { EVENT_NAME, PRICE_PER_TICKET } from '../constants/bookingConfig'
+import { fetchTicketAvailability } from '../services/bookingApi'
 
 function EventDetails() {
-  const { availableTickets, pricePerTicket, eventName } = useBooking()
+  const [availableTickets, setAvailableTickets] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const fewLeft = availableTickets > 0 && availableTickets < 10
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await fetchTicketAvailability()
+      setAvailableTickets(data.availableTickets)
+    } catch (err) {
+      setError(err.message || 'Could not load availability.')
+      setAvailableTickets(null)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  const fewLeft =
+    availableTickets !== null && availableTickets > 0 && availableTickets < 10
   const soldOut = availableTickets === 0
 
   const bookButtonClass = soldOut
@@ -18,14 +41,27 @@ function EventDetails() {
           Event reference: EVT-2026-001
         </p>
         <h1 className="mt-2 text-3xl font-bold text-slate-900 md:text-4xl">
-          {eventName}
+          {EVENT_NAME}
         </h1>
         <p className="mt-4 text-lg text-slate-600">
           Full event information will load from your backend or CMS later. Below
           is static placeholder content for layout and typography.
         </p>
 
-        {fewLeft && (
+        {error && (
+          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900">
+            {error}{' '}
+            <button
+              type="button"
+              onClick={() => load()}
+              className="font-semibold underline hover:text-amber-950"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {fewLeft && !loading && (
           <p
             className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700"
             role="status"
@@ -34,7 +70,7 @@ function EventDetails() {
           </p>
         )}
 
-        {soldOut && (
+        {soldOut && !loading && !error && (
           <p
             className="mt-4 rounded-lg border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-800"
             role="status"
@@ -67,10 +103,16 @@ function EventDetails() {
               Tickets available
             </dt>
             <dd className="mt-1 text-slate-900">
-              <span className="font-semibold text-indigo-700">
-                {availableTickets}
-              </span>{' '}
-              remaining · ${pricePerTicket} each
+              {loading ? (
+                <span className="text-slate-500">Loading…</span>
+              ) : (
+                <>
+                  <span className="font-semibold text-indigo-700">
+                    {availableTickets ?? '—'}
+                  </span>{' '}
+                  remaining · ${PRICE_PER_TICKET} each
+                </>
+              )}
             </dd>
           </div>
         </dl>
@@ -90,7 +132,11 @@ function EventDetails() {
         </div>
 
         <div className="mt-10 flex flex-wrap gap-4">
-          {soldOut ? (
+          {loading ? (
+            <span className="inline-flex rounded-lg bg-slate-200 px-6 py-3 text-sm font-semibold text-slate-600">
+              Loading…
+            </span>
+          ) : soldOut || error ? (
             <span
               className={`inline-flex rounded-lg px-6 py-3 text-sm font-semibold text-white ${bookButtonClass}`}
             >

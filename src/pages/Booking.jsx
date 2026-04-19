@@ -1,6 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useBooking } from '../context/BookingContext'
+import { EVENT_NAME, PRICE_PER_TICKET } from '../constants/bookingConfig'
+import {
+  fetchTicketAvailability,
+  submitBooking,
+} from '../services/bookingApi'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -15,28 +19,38 @@ function getInitialForm() {
 
 function Booking() {
   const navigate = useNavigate()
-  const {
-    availableTickets,
-    completeBooking,
-    pricePerTicket,
-    eventName,
-  } = useBooking()
 
   const [form, setForm] = useState(getInitialForm)
   const [errors, setErrors] = useState({})
-  const [submitSuccess, setSubmitSuccess] = useState(false)
+  const [availableTickets, setAvailableTickets] = useState(null)
+  const [ticketsLoading, setTicketsLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [apiError, setApiError] = useState(null)
 
-  const soldOut = availableTickets === 0
+  const loadTickets = useCallback(async () => {
+    setTicketsLoading(true)
+    setLoadError(null)
+    try {
+      const data = await fetchTicketAvailability()
+      setAvailableTickets(data.availableTickets)
+    } catch (err) {
+      setLoadError(err.message || 'Could not load ticket availability.')
+      setAvailableTickets(null)
+    } finally {
+      setTicketsLoading(false)
+    }
+  }, [])
 
   useEffect(() => {
-    if (!submitSuccess) return
-    const id = window.setTimeout(() => {
-      navigate('/confirmation')
-    }, 650)
-    return () => window.clearTimeout(id)
-  }, [submitSuccess, navigate])
+    loadTickets()
+  }, [loadTickets])
+
+  const soldOut = availableTickets === 0
+  const ready = !ticketsLoading && availableTickets !== null && !loadError
 
   function handleChange(field, value) {
+    setApiError(null)
     setForm((prev) => ({ ...prev, [field]: value }))
     if (errors[field]) {
       setErrors((prev) => {
@@ -63,16 +77,16 @@ function Booking() {
       next.tickets = 'Number of tickets is required.'
     } else if (Number.isNaN(count) || count <= 0) {
       next.tickets = 'Tickets must be greater than zero.'
-    } else if (count > availableTickets) {
+    } else if (availableTickets !== null && count > availableTickets) {
       next.tickets = `Only ${availableTickets} ticket(s) available.`
     }
 
     return next
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    if (soldOut) return
+    if (!ready || soldOut || submitting) return
 
     const nextErrors = validate()
     if (Object.keys(nextErrors).length > 0) {
@@ -81,17 +95,37 @@ function Booking() {
     }
 
     const count = Number.parseInt(String(form.tickets).trim(), 10)
+    setSubmitting(true)
+    setApiError(null)
 
-    completeBooking({
-      name: form.name,
-      email: form.email,
+    const { ok, data } = await submitBooking({
+      name: form.name.trim(),
+      email: form.email.trim(),
       department: form.department,
       tickets: count,
     })
 
-    setForm(getInitialForm())
-    setErrors({})
-    setSubmitSuccess(true)
+    setSubmitting(false)
+
+    if (ok && data.success && data.data?.booking) {
+      const b = data.data.booking
+      setForm(getInitialForm())
+      setErrors({})
+      navigate('/confirmation', {
+        state: {
+          booking: {
+            name: b.name,
+            eventName: EVENT_NAME,
+            ticketCount: b.tickets,
+            totalAmount: b.tickets * PRICE_PER_TICKET,
+            bookingId: b._id,
+          },
+        },
+      })
+      return
+    }
+
+    setApiError(data.message || 'Booking failed. Please try again.')
   }
 
   const inputError =
@@ -99,19 +133,41 @@ function Booking() {
   const inputNormal =
     'border-slate-300 focus:border-indigo-500 focus:ring-indigo-500/20'
 
+  const ticketLabel =
+    ticketsLoading || availableTickets === null
+      ? 'Loading…'
+      : soldOut
+        ? 'Sold out'
+        : `${availableTickets} left`
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <div className="mx-auto max-w-xl">
         <h1 className="text-3xl font-bold text-slate-900">Book tickets</h1>
         <p className="mt-2 text-slate-600">
-          {eventName} · <span className="font-medium text-slate-800">${pricePerTicket}</span>{' '}
+          {EVENT_NAME} ·{' '}
+          <span className="font-medium text-slate-800">${PRICE_PER_TICKET}</span>{' '}
           per ticket ·{' '}
-          <span className="font-medium text-indigo-700">
-            {soldOut ? 'Sold out' : `${availableTickets} left`}
-          </span>
+          <span className="font-medium text-indigo-700">{ticketLabel}</span>
         </p>
 
-        {soldOut && (
+        {loadError && (
+          <div
+            className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+            role="alert"
+          >
+            <p>{loadError}</p>
+            <button
+              type="button"
+              onClick={() => loadTickets()}
+              className="mt-2 text-sm font-semibold text-amber-800 underline hover:text-amber-950"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {soldOut && ready && (
           <div
             className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
             role="alert"
@@ -121,12 +177,12 @@ function Booking() {
           </div>
         )}
 
-        {submitSuccess && (
+        {apiError && (
           <div
-            className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800"
-            role="status"
+            className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            role="alert"
           >
-            Booking confirmed — redirecting to your confirmation…
+            {apiError}
           </div>
         )}
 
@@ -149,7 +205,7 @@ function Booking() {
               placeholder="Your full name"
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
-              disabled={soldOut || submitSuccess}
+              disabled={!ready || soldOut || submitting}
               className={`mt-2 w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
                 errors.name ? inputError : inputNormal
               }`}
@@ -174,7 +230,7 @@ function Booking() {
               placeholder="you@department.example"
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              disabled={soldOut || submitSuccess}
+              disabled={!ready || soldOut || submitting}
               className={`mt-2 w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
                 errors.email ? inputError : inputNormal
               }`}
@@ -196,7 +252,7 @@ function Booking() {
               name="department"
               value={form.department}
               onChange={(e) => handleChange('department', e.target.value)}
-              disabled={soldOut || submitSuccess}
+              disabled={!ready || soldOut || submitting}
               className={`mt-2 w-full rounded-lg border bg-white px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
                 errors.department ? inputError : inputNormal
               }`}
@@ -225,11 +281,11 @@ function Booking() {
               name="tickets"
               type="number"
               min="1"
-              max={availableTickets || undefined}
+              max={availableTickets && availableTickets > 0 ? availableTickets : undefined}
               placeholder="1"
               value={form.tickets}
               onChange={(e) => handleChange('tickets', e.target.value)}
-              disabled={soldOut || submitSuccess}
+              disabled={!ready || soldOut || submitting}
               className={`mt-2 w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
                 errors.tickets ? inputError : inputNormal
               }`}
@@ -242,10 +298,14 @@ function Booking() {
           <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
             <button
               type="submit"
-              disabled={soldOut || submitSuccess}
+              disabled={!ready || soldOut || submitting}
               className="inline-flex justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-400"
             >
-              {soldOut ? 'Sold out' : 'Complete booking'}
+              {submitting
+                ? 'Submitting…'
+                : soldOut
+                  ? 'Sold out'
+                  : 'Complete booking'}
             </button>
             <Link
               to="/event"

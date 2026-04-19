@@ -1,8 +1,8 @@
-import { Link } from 'react-router-dom'
-import { useBooking } from '../context/BookingContext'
+import { Link, useLocation } from 'react-router-dom'
 
 function Confirmation() {
-  const { bookingData } = useBooking()
+  const location = useLocation()
+  const bookingData = location.state?.booking
 
   if (!bookingData) {
     return (
@@ -24,7 +24,7 @@ function Confirmation() {
     )
   }
 
-  const { name, eventName, ticketCount, totalAmount } = bookingData
+  const { name, eventName, ticketCount, totalAmount, bookingId } = bookingData
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
@@ -49,12 +49,17 @@ function Confirmation() {
           Booking confirmed
         </h1>
         <p className="mt-3 text-slate-600 leading-relaxed">
-          Thank you — your reservation is saved. A confirmation email would be
-          sent here in a full integration.
+          Thank you — your reservation is saved in the database. A confirmation
+          email can be added in a future iteration.
         </p>
 
         <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-md">
           <p className="font-semibold text-slate-900">Booking summary</p>
+          {bookingId && (
+            <p className="mt-1 text-xs text-slate-500">
+              Reference: <span className="font-mono">{String(bookingId)}</span>
+            </p>
+          )}
           <dl className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between gap-4 border-b border-slate-100 pb-3">
               <dt className="text-slate-500">Name</dt>
@@ -73,7 +78,7 @@ function Confirmation() {
                 Total amount
               </dt>
               <dd className="text-base font-bold text-emerald-700">
-                ${totalAmount.toFixed(2)}
+                ${Number(totalAmount).toFixed(2)}
               </dd>
             </div>
           </dl>

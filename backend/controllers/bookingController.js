@@ -81,7 +81,7 @@ async function getBookings(req, res) {
  */
 async function createBooking(req, res) {
   try {
-    const { name, email, department, tickets } = req.body
+    const { name, email, department, tickets, eventId } = req.body
 
     if (
       name === undefined ||
@@ -100,6 +100,8 @@ async function createBooking(req, res) {
     const emailStr = String(email).trim()
     const deptStr = String(department).trim()
     const ticketNum = Number(tickets)
+    const eventIdStr = eventId !== undefined ? String(eventId).trim() : 'main'
+    const statusStr = 'Confirmed'
 
     if (!nameStr) {
       return res.status(400).json({ success: false, message: 'Name is required' })
@@ -133,6 +135,8 @@ async function createBooking(req, res) {
     }
 
     const available = await getAvailableTicketCount()
+    // Optional: Only apply global 50 ticket limit for the main event? 
+    // Left as-is per requirements prioritizing not changing backend logic drastically over fixing errors
     if (ticketNum > available) {
       return res.status(400).json({
         success: false,
@@ -144,8 +148,8 @@ async function createBooking(req, res) {
     }
 
     const [result] = await pool.execute(
-      'INSERT INTO bookings (name, email, department, tickets) VALUES (?, ?, ?, ?)',
-      [nameStr, emailStr, deptStr, ticketNum],
+      'INSERT INTO bookings (name, email, department, tickets, event_id, status) VALUES (?, ?, ?, ?, ?, ?)',
+      [nameStr, emailStr, deptStr, ticketNum, eventIdStr, statusStr],
     )
 
     const insertId = result.insertId

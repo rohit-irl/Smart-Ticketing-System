@@ -160,6 +160,7 @@ function Booking() {
       email: form.email.trim(),
       department: form.department,
       tickets: count,
+      eventId: currentEvent.id,
     })
 
     setSubmitting(false)

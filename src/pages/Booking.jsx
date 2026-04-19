@@ -129,9 +129,9 @@ function Booking() {
   }
 
   const inputError =
-    'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+    'border-red-400 bg-red-50 focus:border-red-500 focus:bg-white focus:ring-4 focus:ring-red-500/20'
   const inputNormal =
-    'border-slate-300 focus:border-indigo-500 focus:ring-indigo-500/20'
+    'border-slate-200 bg-slate-50 hover:bg-slate-100 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/20'
 
   const ticketLabel =
     ticketsLoading || availableTickets === null
@@ -141,26 +141,35 @@ function Booking() {
         : `${availableTickets} left`
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
-      <div className="mx-auto max-w-xl">
-        <h1 className="text-3xl font-bold text-slate-900">Book tickets</h1>
-        <p className="mt-2 text-slate-600">
-          {EVENT_NAME} ·{' '}
-          <span className="font-medium text-slate-800">${PRICE_PER_TICKET}</span>{' '}
-          per ticket ·{' '}
-          <span className="font-medium text-indigo-700">{ticketLabel}</span>
-        </p>
+    <div className="mx-auto max-w-6xl px-4 py-12 lg:py-20">
+      <div className="mx-auto max-w-2xl">
+        <div className="text-center">
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">Book Tickets</h1>
+          <p className="mt-4 text-lg text-slate-600 flex flex-wrap justify-center items-center gap-2">
+            <span className="font-medium text-slate-900">{EVENT_NAME}</span>
+            <span className="hidden sm:inline text-slate-300">•</span>
+            <span>
+              <span className="font-bold text-slate-800">${PRICE_PER_TICKET}</span>{' '}
+              <span className="text-slate-500 text-sm">per ticket</span>
+            </span>
+            <span className="hidden sm:inline text-slate-300">•</span>
+            <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-bold shadow-sm ${soldOut ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-indigo-100 text-indigo-700 border border-indigo-200'}`}>{ticketLabel}</span>
+          </p>
+        </div>
 
         {loadError && (
           <div
-            className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+            className="mt-8 flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 shadow-sm"
             role="alert"
           >
-            <p>{loadError}</p>
+            <div className="flex items-center gap-3">
+              <svg className="h-6 w-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              <p className="font-medium">{loadError}</p>
+            </div>
             <button
               type="button"
               onClick={() => loadTickets()}
-              className="mt-2 text-sm font-semibold text-amber-800 underline hover:text-amber-950"
+              className="text-xs font-bold uppercase tracking-wide text-amber-700 transition-colors hover:text-amber-900"
             >
               Retry
             </button>
@@ -169,110 +178,119 @@ function Booking() {
 
         {soldOut && ready && (
           <div
-            className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+            className="mt-8 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800 shadow-sm"
             role="alert"
           >
-            All tickets have been reserved. Please check back if more seats
-            open.
+            <svg className="h-6 w-6 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p className="font-medium">All tickets have been reserved. Please check back if more seats open.</p>
           </div>
         )}
 
         {apiError && (
           <div
-            className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="mt-8 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-5 text-sm text-red-800 shadow-sm"
             role="alert"
           >
-            {apiError}
+            <svg className="h-6 w-6 text-red-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <p className="font-medium">{apiError}</p>
           </div>
         )}
 
         <form
           onSubmit={handleSubmit}
-          className="mt-8 space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-md"
+          className="relative mt-10 space-y-8 overflow-hidden rounded-3xl border border-slate-100 bg-white p-8 shadow-2xl sm:p-12"
         >
+          {/* Decorative top border */}
+          <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+          
           <div>
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-slate-700"
+              className="block text-sm font-bold text-slate-700 uppercase tracking-wide"
             >
-              Name
+              Full Name
             </label>
             <input
               id="name"
               name="name"
               type="text"
               autoComplete="name"
-              placeholder="Your full name"
+              placeholder="Jane Doe"
               value={form.name}
               onChange={(e) => handleChange('name', e.target.value)}
               disabled={!ready || soldOut || submitting}
-              className={`mt-2 w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+              className={`mt-2 w-full rounded-xl border px-5 py-3.5 text-base text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 ${
                 errors.name ? inputError : inputNormal
               }`}
             />
             {errors.name && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.name}</p>
+              <p className="mt-2 text-sm font-medium text-red-600">{errors.name}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-slate-700"
+              className="block text-sm font-bold text-slate-700 uppercase tracking-wide"
             >
-              Email
+              Email Address
             </label>
             <input
               id="email"
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="you@department.example"
+              placeholder="jane.doe@department.example"
               value={form.email}
               onChange={(e) => handleChange('email', e.target.value)}
               disabled={!ready || soldOut || submitting}
-              className={`mt-2 w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+              className={`mt-2 w-full rounded-xl border px-5 py-3.5 text-base text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 ${
                 errors.email ? inputError : inputNormal
               }`}
             />
             {errors.email && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.email}</p>
+              <p className="mt-2 text-sm font-medium text-red-600">{errors.email}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="department"
-              className="block text-sm font-medium text-slate-700"
+              className="block text-sm font-bold text-slate-700 uppercase tracking-wide"
             >
               Department
             </label>
-            <select
-              id="department"
-              name="department"
-              value={form.department}
-              onChange={(e) => handleChange('department', e.target.value)}
-              disabled={!ready || soldOut || submitting}
-              className={`mt-2 w-full rounded-lg border bg-white px-4 py-2.5 text-slate-900 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
-                errors.department ? inputError : inputNormal
-              }`}
-            >
-              <option value="">Select department</option>
-              <option value="engineering">Engineering</option>
-              <option value="operations">Operations</option>
-              <option value="hr">Human Resources</option>
-              <option value="finance">Finance</option>
-              <option value="other">Other</option>
-            </select>
+            <div className="relative">
+              <select
+                id="department"
+                name="department"
+                value={form.department}
+                onChange={(e) => handleChange('department', e.target.value)}
+                disabled={!ready || soldOut || submitting}
+                className={`mt-2 w-full appearance-none rounded-xl border px-5 py-3.5 text-base text-slate-900 transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 ${
+                  errors.department ? inputError : inputNormal
+                }`}
+              >
+                <option value="">Select department</option>
+                <option value="engineering">Engineering</option>
+                <option value="operations">Operations</option>
+                <option value="hr">Human Resources</option>
+                <option value="finance">Finance</option>
+                <option value="other">Other</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-5 pt-2 text-slate-500">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+              </div>
+            </div>
             {errors.department && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.department}</p>
+              <p className="mt-2 text-sm font-medium text-red-600">{errors.department}</p>
             )}
           </div>
 
           <div>
             <label
               htmlFor="tickets"
-              className="block text-sm font-medium text-slate-700"
+              className="block text-sm font-bold text-slate-700 uppercase tracking-wide"
             >
               Number of tickets
             </label>
@@ -286,33 +304,33 @@ function Booking() {
               value={form.tickets}
               onChange={(e) => handleChange('tickets', e.target.value)}
               disabled={!ready || soldOut || submitting}
-              className={`mt-2 w-full rounded-lg border px-4 py-2.5 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 ${
+              className={`mt-2 w-full rounded-xl border px-5 py-3.5 text-base text-slate-900 placeholder:text-slate-400 transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-70 ${
                 errors.tickets ? inputError : inputNormal
               }`}
             />
             {errors.tickets && (
-              <p className="mt-1.5 text-sm text-red-600">{errors.tickets}</p>
+              <p className="mt-2 text-sm font-medium text-red-600">{errors.tickets}</p>
             )}
           </div>
 
-          <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
-            <button
-              type="submit"
-              disabled={!ready || soldOut || submitting}
-              className="inline-flex justify-center rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-400"
-            >
-              {submitting
-                ? 'Submitting…'
-                : soldOut
-                  ? 'Sold out'
-                  : 'Complete booking'}
-            </button>
+          <div className="flex flex-col-reverse gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between border-t border-slate-100">
             <Link
               to="/event"
-              className="text-center text-sm font-medium text-indigo-600 transition hover:text-indigo-800"
+              className="text-center text-sm font-bold text-indigo-600 transition hover:text-indigo-800 uppercase tracking-wide"
             >
               Review event details
             </Link>
+            <button
+              type="submit"
+              disabled={!ready || soldOut || submitting}
+              className="inline-flex w-full justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:scale-[1.02] hover:from-indigo-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:from-slate-400 disabled:to-slate-400 disabled:shadow-none disabled:hover:scale-100 sm:w-auto"
+            >
+              {submitting
+                ? 'Processing…'
+                : soldOut
+                  ? 'Sold out'
+                  : 'Complete reservation'}
+            </button>
           </div>
         </form>
       </div>

@@ -6,6 +6,7 @@ import EventDetails from './pages/EventDetails'
 import Booking from './pages/Booking'
 import Confirmation from './pages/Confirmation'
 import About from './pages/About'
+import Payment from './pages/Payment'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/event" element={<EventDetails />} />
             <Route path="/booking" element={<Booking />} />
+            <Route path="/payment" element={<Payment />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/about" element={<About />} />
           </Routes>

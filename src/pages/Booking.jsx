@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { EVENT_NAME, PRICE_PER_TICKET, SAMPLE_EVENTS } from '../constants/bookingConfig'
 import {
@@ -169,11 +169,12 @@ function Booking() {
       const b = data.data.booking
       setForm(getInitialForm())
       setErrors({})
-      navigate('/confirmation', {
+      navigate('/payment', {
         state: {
           booking: {
             name: b.name,
             eventName: currentEvent.name,
+            eventId: currentEvent.id,
             ticketCount: b.tickets,
             totalAmount: b.tickets * currentEvent.price,
             bookingId: b._id,

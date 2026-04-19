@@ -27,7 +27,7 @@ function Confirmation() {
     )
   }
 
-  const { name, eventName, ticketCount, totalAmount, bookingId } = bookingData
+  const { name, eventName, eventId, ticketCount, totalAmount, bookingId } = bookingData
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 animate-fade-in-up">
@@ -81,6 +81,14 @@ function Confirmation() {
               <dt className="text-base font-semibold text-slate-500">Event</dt>
               <dd className="text-base font-bold text-slate-900 text-right">{eventName}</dd>
             </div>
+            {eventId && (
+              <div className="flex justify-between gap-4">
+                <dt className="text-base font-semibold text-slate-500">Event ID</dt>
+                <dd className="text-sm font-mono font-bold text-slate-600 text-right">
+                  {eventId === 'main' ? '99999' : String(eventId).padStart(5, '0')}
+                </dd>
+              </div>
+            )}
             <div className="flex justify-between gap-4">
               <dt className="text-base font-semibold text-slate-500">Tickets</dt>
               <dd className="text-base font-bold text-slate-900">{ticketCount}</dd>

@@ -40,8 +40,8 @@ export const SAMPLE_EVENTS = [
   },
   {
     id: 5,
-    name: 'Data Science Summit',
-    department: 'Data Analytics',
+    name: 'Cloud Architecture Forum',
+    department: 'Cloud Solutions',
     date: 'Feb 20, 2027',
     venue: 'Grand Hall',
     price: 60,

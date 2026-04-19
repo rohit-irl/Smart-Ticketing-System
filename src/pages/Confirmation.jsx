@@ -1,6 +1,31 @@
 import { Link } from 'react-router-dom'
+import { useBooking } from '../context/BookingContext'
 
 function Confirmation() {
+  const { bookingData } = useBooking()
+
+  if (!bookingData) {
+    return (
+      <div className="mx-auto max-w-6xl px-4 py-16">
+        <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-md">
+          <p className="text-lg font-medium text-slate-800">No booking found</p>
+          <p className="mt-2 text-slate-600">
+            Complete a booking from the booking page to see your confirmation
+            here.
+          </p>
+          <Link
+            to="/"
+            className="mt-8 inline-flex rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+          >
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const { name, eventName, ticketCount, totalAmount } = bookingData
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16">
       <div className="mx-auto max-w-lg text-center">
@@ -21,39 +46,49 @@ function Confirmation() {
           </svg>
         </div>
         <h1 className="mt-6 text-2xl font-bold text-slate-900 md:text-3xl">
-          Booking received (placeholder)
+          Booking confirmed
         </h1>
         <p className="mt-3 text-slate-600 leading-relaxed">
-          This is a static confirmation layout. In production, this screen will
-          show a reference number, summary, and next steps after a successful
-          submission.
+          Thank you — your reservation is saved. A confirmation email would be
+          sent here in a full integration.
         </p>
-        <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6 text-left text-sm text-slate-600">
-          <p className="font-medium text-slate-900">Placeholder summary</p>
-          <ul className="mt-3 space-y-2">
-            <li>
-              <span className="text-slate-500">Event:</span> Innovation Summit
-              2026
-            </li>
-            <li>
-              <span className="text-slate-500">Reference:</span> REF-PLACEHOLDER
-            </li>
-            <li>
-              <span className="text-slate-500">Status:</span> Pending
-              confirmation email
-            </li>
-          </ul>
+
+        <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6 text-left shadow-md">
+          <p className="font-semibold text-slate-900">Booking summary</p>
+          <dl className="mt-4 space-y-3 text-sm">
+            <div className="flex justify-between gap-4 border-b border-slate-100 pb-3">
+              <dt className="text-slate-500">Name</dt>
+              <dd className="font-medium text-slate-900">{name}</dd>
+            </div>
+            <div className="flex justify-between gap-4 border-b border-slate-100 pb-3">
+              <dt className="text-slate-500">Event</dt>
+              <dd className="font-medium text-slate-900">{eventName}</dd>
+            </div>
+            <div className="flex justify-between gap-4 border-b border-slate-100 pb-3">
+              <dt className="text-slate-500">Tickets</dt>
+              <dd className="font-medium text-slate-900">{ticketCount}</dd>
+            </div>
+            <div className="flex justify-between gap-4 pt-1">
+              <dt className="text-base font-semibold text-slate-900">
+                Total amount
+              </dt>
+              <dd className="text-base font-bold text-emerald-700">
+                ${totalAmount.toFixed(2)}
+              </dd>
+            </div>
+          </dl>
         </div>
+
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link
             to="/"
-            className="inline-flex rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="inline-flex rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
           >
             Back to home
           </Link>
           <Link
             to="/booking"
-            className="inline-flex rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex rounded-lg border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             Book another
           </Link>

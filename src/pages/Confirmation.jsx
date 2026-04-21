@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import { jsPDF } from 'jspdf'
 
 function Confirmation() {
   const location = useLocation()
@@ -27,7 +28,92 @@ function Confirmation() {
     )
   }
 
-  const { name, eventName, eventId, ticketCount, totalAmount, bookingId } = bookingData
+  const { 
+    name, email, department, eventName, eventDate, venue, 
+    ticketCount, pricePerTicket, totalAmount, bookingId, transactionDate 
+  } = bookingData
+
+  const generatePDF = () => {
+    // 1. USE REAL STATE DATA
+    const formData = {
+      name: name,
+      email: email,
+      department: department,
+      tickets: ticketCount,
+    }
+    
+    const selectedEvent = {
+      name: eventName,
+      date: eventDate,
+      venue: venue,
+      price: pricePerTicket,
+    }
+
+    // 6. ADD DEBUG LOGS
+    console.log("Form Data:", formData)
+    console.log("Selected Event:", selectedEvent)
+
+    // 2. ADD SAFETY CHECK
+    if (!selectedEvent || !formData.name) {
+      alert("No booking data found")
+      return
+    }
+
+    const doc = new jsPDF()
+    
+    // 3. CREATE PROPER PDF FUNCTION
+    // Title
+    doc.setFont("helvetica", "bold")
+    doc.setFontSize(22)
+    doc.text("Ticket Booking Receipt", 105, 20, { align: "center" })
+    
+    doc.setLineWidth(0.5)
+    doc.line(20, 25, 190, 25)
+
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "normal")
+    
+    let yPos = 40
+    const lineSpacing = 10
+    
+    // 5. CALCULATE TOTAL PROPERLY
+    const total = selectedEvent.price * Number(formData.tickets)
+    const timestamp = transactionDate || new Date().toLocaleString()
+
+    // Proper spacing and clean readable format
+    const writeLine = (label, value) => {
+      doc.setFont("helvetica", "bold")
+      doc.text(`${label}:`, 20, yPos)
+      doc.setFont("helvetica", "normal")
+      doc.text(String(value || "N/A"), 60, yPos)
+      yPos += lineSpacing
+    }
+
+    writeLine("Name", formData.name)
+    writeLine("Email", formData.email)
+    writeLine("Department", formData.department)
+    writeLine("Event Name", selectedEvent.name)
+    writeLine("Date", selectedEvent.date)
+    writeLine("Venue", selectedEvent.venue)
+    writeLine("Tickets", formData.tickets)
+    writeLine("Price per ticket", `$${selectedEvent.price}`)
+    
+    doc.line(20, yPos - 5, 190, yPos - 5)
+    yPos += 5
+    
+    doc.setFont("helvetica", "bold")
+    doc.text("Total amount:", 20, yPos)
+    doc.text(`$${total}`, 60, yPos)
+    
+    yPos += lineSpacing + 5
+    doc.setFont("helvetica", "italic")
+    doc.setFontSize(10)
+    doc.text(`Timestamp: ${timestamp}`, 20, yPos)
+
+    // 4. FIX FILE ERROR (VERY IMPORTANT)
+    // ONLY use doc.save
+    doc.save("receipt.pdf")
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 animate-fade-in-up">
@@ -50,7 +136,7 @@ function Confirmation() {
           </svg>
         </div>
         <h1 className="mt-8 text-3xl font-extrabold tracking-tight text-slate-900 md:text-4xl">
-          Booking confirmed
+          Booking Confirmed
         </h1>
         <p className="mt-4 text-lg leading-relaxed text-slate-600 max-w-md mx-auto">
           Thank you! Your reservation is safely stored. A confirmation
@@ -60,7 +146,7 @@ function Confirmation() {
         <div className="relative mt-12 overflow-hidden rounded-3xl border border-white/60 bg-white/80 backdrop-blur-xl p-8 sm:p-10 text-left shadow-2xl">
           <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
           
-          <div className="flex justify-between items-end border-b-2 border-dashed border-slate-200 pb-6">
+          <div className="flex justify-between items-end border-b-2 border-dashed border-slate-200 pb-6 mb-6">
             <div>
               <p className="text-xl font-extrabold tracking-tight text-slate-900 uppercase">Ticket Receipt</p>
               {bookingId && (
@@ -72,26 +158,42 @@ function Confirmation() {
             <svg className="h-10 w-10 text-slate-200" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm3 2h6v2H9V8zm0 4h6v2H9v-2z" /></svg>
           </div>
           
-          <dl className="mt-6 space-y-4">
+          <dl className="space-y-4">
             <div className="flex justify-between gap-4">
-              <dt className="text-base font-semibold text-slate-500">Name</dt>
-              <dd className="text-base font-bold text-slate-900">{name}</dd>
+              <dt className="text-base font-semibold text-slate-500">User Name</dt>
+              <dd className="text-base font-bold text-slate-900">{name || 'N/A'}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-base font-semibold text-slate-500">Email</dt>
+              <dd className="text-base font-bold text-slate-900 text-right break-all">{email || 'N/A'}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-base font-semibold text-slate-500">Department</dt>
+              <dd className="text-base font-bold text-slate-900 capitalize">{department || 'N/A'}</dd>
             </div>
             <div className="flex justify-between gap-4">
               <dt className="text-base font-semibold text-slate-500">Event</dt>
-              <dd className="text-base font-bold text-slate-900 text-right">{eventName}</dd>
+              <dd className="text-base font-bold text-slate-900 text-right">{eventName || 'N/A'}</dd>
             </div>
-            {eventId && (
-              <div className="flex justify-between gap-4">
-                <dt className="text-base font-semibold text-slate-500">Event ID</dt>
-                <dd className="text-sm font-mono font-bold text-slate-600 text-right">
-                  {eventId === 'main' ? '99999' : String(eventId).padStart(5, '0')}
-                </dd>
-              </div>
-            )}
+            <div className="flex justify-between gap-4">
+              <dt className="text-base font-semibold text-slate-500">Event Date</dt>
+              <dd className="text-sm font-bold text-slate-600 text-right">{eventDate || 'N/A'}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-base font-semibold text-slate-500">Venue</dt>
+              <dd className="text-sm font-bold text-slate-600 text-right">{venue || 'N/A'}</dd>
+            </div>
             <div className="flex justify-between gap-4">
               <dt className="text-base font-semibold text-slate-500">Tickets</dt>
               <dd className="text-base font-bold text-slate-900">{ticketCount}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-base font-semibold text-slate-500">Price per ticket</dt>
+              <dd className="text-base font-bold text-slate-900">{pricePerTicket ? `$${pricePerTicket}` : '0'}</dd>
+            </div>
+            <div className="flex justify-between gap-4">
+              <dt className="text-base font-semibold text-slate-500">Date/time</dt>
+              <dd className="text-sm font-bold text-slate-600 text-right">{transactionDate}</dd>
             </div>
           </dl>
           
@@ -100,7 +202,7 @@ function Confirmation() {
               Total Paid
             </dt>
             <dd className="text-3xl font-black text-emerald-600">
-              ${Number(totalAmount).toFixed(2)}
+              ${Number(totalAmount || 0).toFixed(2)}
             </dd>
           </div>
           
@@ -109,7 +211,25 @@ function Confirmation() {
           <div className="absolute -right-3 bottom-24 h-6 w-6 rounded-full bg-slate-50/50 shadow-inner"></div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        {/* Download Receipt Button */}
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={generatePDF}
+            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02] hover:from-emerald-600 hover:to-teal-700 w-full sm:w-auto"
+          >
+            <svg 
+              className="h-5 w-5 transition-transform group-hover:-translate-y-1" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Download Receipt
+          </button>
+        </div>
+
+        <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             to="/"
             className="inline-flex w-full justify-center rounded-xl bg-slate-800 px-8 py-4 text-base font-bold text-white shadow-lg shadow-slate-200 transition-all hover:scale-[1.02] hover:bg-slate-900 sm:w-auto"

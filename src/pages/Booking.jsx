@@ -173,11 +173,17 @@ function Booking() {
         state: {
           booking: {
             name: b.name,
+            email: form.email.trim(),
+            department: form.department,
             eventName: currentEvent.name,
             eventId: currentEvent.id,
+            eventDate: currentEvent.date,
+            venue: currentEvent.venue,
             ticketCount: b.tickets,
+            pricePerTicket: currentEvent.price,
             totalAmount: b.tickets * currentEvent.price,
-            bookingId: b._id,
+            bookingId: b._id || new Date().getTime().toString(),
+            transactionDate: new Date().toLocaleString(),
           },
         },
       })

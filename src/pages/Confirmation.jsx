@@ -28,9 +28,9 @@ function Confirmation() {
     )
   }
 
-  const { 
-    name, email, department, eventName, eventDate, venue, 
-    ticketCount, pricePerTicket, totalAmount, bookingId, transactionDate 
+  const {
+    name, email, department, eventName, eventDate, venue,
+    ticketCount, pricePerTicket, totalAmount, bookingId, transactionDate
   } = bookingData
 
   const generatePDF = () => {
@@ -41,7 +41,7 @@ function Confirmation() {
       department: department,
       tickets: ticketCount,
     }
-    
+
     const selectedEvent = {
       name: eventName,
       date: eventDate,
@@ -60,22 +60,22 @@ function Confirmation() {
     }
 
     const doc = new jsPDF()
-    
+
     // 3. CREATE PROPER PDF FUNCTION
     // Title
     doc.setFont("helvetica", "bold")
     doc.setFontSize(22)
     doc.text("Ticket Booking Receipt", 105, 20, { align: "center" })
-    
+
     doc.setLineWidth(0.5)
     doc.line(20, 25, 190, 25)
 
     doc.setFontSize(12)
     doc.setFont("helvetica", "normal")
-    
+
     let yPos = 40
     const lineSpacing = 10
-    
+
     // 5. CALCULATE TOTAL PROPERLY
     const total = selectedEvent.price * Number(formData.tickets)
     const timestamp = transactionDate || new Date().toLocaleString()
@@ -97,14 +97,14 @@ function Confirmation() {
     writeLine("Venue", selectedEvent.venue)
     writeLine("Tickets", formData.tickets)
     writeLine("Price per ticket", `$${selectedEvent.price}`)
-    
+
     doc.line(20, yPos - 5, 190, yPos - 5)
     yPos += 5
-    
+
     doc.setFont("helvetica", "bold")
     doc.text("Total amount:", 20, yPos)
     doc.text(`$${total}`, 60, yPos)
-    
+
     yPos += lineSpacing + 5
     doc.setFont("helvetica", "italic")
     doc.setFontSize(10)
@@ -145,7 +145,7 @@ function Confirmation() {
 
         <div className="relative mt-12 overflow-hidden rounded-3xl border border-white/60 bg-white/80 backdrop-blur-xl p-8 sm:p-10 text-left shadow-2xl">
           <div className="absolute left-0 top-0 h-2 w-full bg-gradient-to-r from-emerald-400 to-teal-500"></div>
-          
+
           <div className="flex justify-between items-end border-b-2 border-dashed border-slate-200 pb-6 mb-6">
             <div>
               <p className="text-xl font-extrabold tracking-tight text-slate-900 uppercase">Ticket Receipt</p>
@@ -157,7 +157,7 @@ function Confirmation() {
             </div>
             <svg className="h-10 w-10 text-slate-200" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm3 2h6v2H9V8zm0 4h6v2H9v-2z" /></svg>
           </div>
-          
+
           <dl className="space-y-4">
             <div className="flex justify-between gap-4">
               <dt className="text-base font-semibold text-slate-500">User Name</dt>
@@ -196,7 +196,7 @@ function Confirmation() {
               <dd className="text-sm font-bold text-slate-600 text-right">{transactionDate}</dd>
             </div>
           </dl>
-          
+
           <div className="mt-6 flex items-center justify-between rounded-2xl bg-emerald-50/80 backdrop-blur-sm border border-emerald-100 p-6 pt-5 pb-5">
             <dt className="text-lg font-extrabold uppercase tracking-widest text-emerald-800">
               Total Paid
@@ -205,7 +205,7 @@ function Confirmation() {
               ${Number(totalAmount || 0).toFixed(2)}
             </dd>
           </div>
-          
+
           {/* subtle cutouts for receipt effect */}
           <div className="absolute -left-3 bottom-24 h-6 w-6 rounded-full bg-slate-50/50 shadow-inner"></div>
           <div className="absolute -right-3 bottom-24 h-6 w-6 rounded-full bg-slate-50/50 shadow-inner"></div>
@@ -217,10 +217,10 @@ function Confirmation() {
             onClick={generatePDF}
             className="group inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 px-8 py-4 text-base font-bold text-white shadow-lg shadow-emerald-200 transition-all hover:scale-[1.02] hover:from-emerald-600 hover:to-teal-700 w-full sm:w-auto"
           >
-            <svg 
-              className="h-5 w-5 transition-transform group-hover:-translate-y-1" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              className="h-5 w-5 transition-transform group-hover:-translate-y-1"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

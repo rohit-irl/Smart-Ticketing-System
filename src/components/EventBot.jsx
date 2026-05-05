@@ -29,6 +29,7 @@ const EventBot = ({ isOpen, setIsOpen }) => {
     'How to book?',
     'Ticket prices',
     'Refund policy',
+    'Any offers?',
     'Payment options',
   ];
 
@@ -54,7 +55,8 @@ const EventBot = ({ isOpen, setIsOpen }) => {
         text: response.text,
         sender: 'bot',
         timestamp: new Date(),
-        isHtml: response.isHtml,
+        type: response.type,
+        data: response.data,
       };
       setMessages((prev) => [...prev, botMessage]);
       setIsTyping(false);
@@ -79,17 +81,16 @@ const EventBot = ({ isOpen, setIsOpen }) => {
     // 3. AVAILABLE EVENTS
     if (/events|show events|upcoming|what is on|concert|match|festival|movie/.test(text)) {
       try {
-        // Fetch live availability to combine with events
         const availability = await fetchTicketAvailability().catch(() => null);
-        
-        const eventList = SAMPLE_EVENTS.map(event => {
-          const avail = availability?.availableTickets ?? event.availableTickets;
-          return `• **${event.name}**\n  📅 ${event.date}\n  💰 Starting at $${event.price}\n  🎟️ ${avail} tickets left`;
-        }).join('\n\n');
+        const events = SAMPLE_EVENTS.map(event => ({
+          ...event,
+          availableTickets: availability?.availableTickets ?? event.availableTickets
+        }));
 
         return {
-          text: `Here are the upcoming events:\n\n${eventList}\n\nWhich one would you like to know more about?`,
-          isHtml: false
+          text: 'Here are the upcoming events I found for you:',
+          type: 'events',
+          data: events
         };
       } catch (error) {
         return { text: 'I am having trouble fetching events right now. Please try again later.' };
@@ -98,12 +99,10 @@ const EventBot = ({ isOpen, setIsOpen }) => {
 
     // 4. TICKET PRICING
     if (/price|cost|how much|fee|charges|rate/.test(text)) {
-      const pricingList = SAMPLE_EVENTS.map(event => 
-        `• **${event.name}**: $${event.price}`
-      ).join('\n');
-      
       return {
-        text: `Here is the current pricing for our events:\n\n${pricingList}\n\nPrices are subject to change based on availability.`,
+        text: 'Here is the current pricing for our events:',
+        type: 'pricing',
+        data: SAMPLE_EVENTS
       };
     }
 
@@ -135,6 +134,40 @@ const EventBot = ({ isOpen, setIsOpen }) => {
       };
     }
 
+    // 9. JOKE (NEW)
+    if (/joke|funny|laugh/.test(text)) {
+      const jokes = [
+        "Why did the ticket go to school? Because it wanted to be a 'pass'-port!",
+        "Why don't scientists trust atoms in concerts? Because they make up everything!",
+        "What's a ghost's favorite event? A 'boo'-concert!",
+        "Why was the stadium so cool? Because it was full of fans!"
+      ];
+      return {
+        text: jokes[Math.floor(Math.random() * jokes.length)],
+      };
+    }
+
+    // 10. OFFERS / PROMO (NEW)
+    if (/offer|promo|discount|coupon|deal|code/.test(text)) {
+      return {
+        text: '🔥 **EXCLUSIVE OFFERS** 🔥\n• Use code **FIRSTBOOK** for 10% off your first ticket!\n• Students get a flat $5 discount with ID.\n• Group booking (5+ people) gets 15% off!\n\nApply codes at the checkout page.',
+      };
+    }
+
+    // 11. VENUE INFO (NEW)
+    if (/venue|location|where|address|place/.test(text)) {
+      return {
+        text: 'Our events take place at premium venues including:\n📍 **Main Auditorium** — Central Campus\n📍 **Open Air Theater** — North Wing\n📍 **Innovation Hub** — Tech Park\n\nSpecific venue details are always mentioned on your e-ticket!',
+      };
+    }
+
+    // 12. THANKS (NEW)
+    if (/thank|thanks|thx|great|good job|awesome/.test(text)) {
+      return {
+        text: 'You are very welcome! 😊 Is there anything else I can assist you with today?',
+      };
+    }
+
     // FALLBACK
     return {
       text: 'I did not quite understand that. You can ask me about:\n• Booking a ticket\n• Upcoming events\n• Cancellations and refunds\n• Payment options\n• Checking your booking status\n\nType "help" to see all options.',
@@ -148,8 +181,13 @@ const EventBot = ({ isOpen, setIsOpen }) => {
       <div className="eventbot-header">
         <div className="eventbot-title">
           <div className="eventbot-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 5H18C19.1046 5 20 5.89543 20 7V10C20 11.1046 19.1046 12 18 12H15" />
+              <path d="M9 5H6C4.89543 5 4 5.89543 4 7V10C4 11.1046 4.89543 12 6 12H9" />
+              <path d="M4 12V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V12" />
+              <path d="M9 19V21L12 19" />
+              <circle cx="9" cy="9" r="1" fill="currentColor" />
+              <circle cx="15" cy="9" r="1" fill="currentColor" />
             </svg>
           </div>
           <div>
@@ -158,7 +196,7 @@ const EventBot = ({ isOpen, setIsOpen }) => {
           </div>
         </div>
         <button className="close-btn" onClick={() => setIsOpen(false)}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
@@ -167,31 +205,61 @@ const EventBot = ({ isOpen, setIsOpen }) => {
 
       <div className="eventbot-messages">
         {messages.map((msg) => (
-          <div key={msg.id} className={`message ${msg.sender}`}>
-            <div className="message-content">
-              {msg.text.split('\n').map((line, i) => (
-                <p key={i}>
-                  {line.startsWith('•') || line.startsWith('✓') ? (
-                    <span className="bullet-line">{line}</span>
-                  ) : (
-                    line.split('**').map((part, j) => 
-                      j % 2 === 1 ? <strong key={j}>{part}</strong> : part
-                    )
-                  )}
-                </p>
-              ))}
+          <div key={msg.id} className={`message-wrapper ${msg.sender}`}>
+            <div className={`message ${msg.sender}`}>
+              <div className="message-content">
+                {msg.text.split('\n').map((line, i) => (
+                  <p key={i}>
+                    {line.startsWith('•') || line.startsWith('✓') ? (
+                      <span className="bullet-line">{line.substring(2)}</span>
+                    ) : (
+                      line.split('**').map((part, j) => 
+                        j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                      )
+                    )}
+                  </p>
+                ))}
+              </div>
+              
+              {/* Specialized data rendering */}
+              {msg.type === 'events' && msg.data && (
+                <div className="event-cards-container">
+                  {msg.data.map((event, idx) => (
+                    <div key={idx} className="event-card-compact">
+                      <div className="event-card-header">
+                        <span className="event-card-name">{event.name}</span>
+                        <span className="event-card-price">${event.price}</span>
+                      </div>
+                      <div className="event-card-meta">
+                        <span>📅 {event.date}</span>
+                        <span>🎟️ {event.availableTickets} left</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {msg.type === 'pricing' && msg.data && (
+                <div className="pricing-list">
+                  {msg.data.map((event, idx) => (
+                    <div key={idx} className="pricing-item" style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
+                      <span style={{ fontWeight: 600 }}>{event.name}</span>
+                      <span style={{ color: '#10b981', fontWeight: 800 }}>${event.price}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <span className="timestamp">
+                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </span>
             </div>
-            <span className="timestamp">
-              {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </span>
           </div>
         ))}
         {isTyping && (
           <div className="message bot">
             <div className="typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
+              <span></span><span></span><span></span>
             </div>
           </div>
         )}
@@ -209,13 +277,13 @@ const EventBot = ({ isOpen, setIsOpen }) => {
         <div className="input-area">
           <input
             type="text"
-            placeholder="Type a message..."
+            placeholder="Ask me anything..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend(input)}
           />
           <button className="send-btn" onClick={() => handleSend(input)}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
               <line x1="22" y1="2" x2="11" y2="13" />
               <polygon points="22 2 15 22 11 13 2 9 22 2" />
             </svg>

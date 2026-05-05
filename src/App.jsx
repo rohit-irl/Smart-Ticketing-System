@@ -9,28 +9,41 @@ import Confirmation from './pages/Confirmation'
 import About from './pages/About'
 import Payment from './pages/Payment'
 import EventBot from './components/EventBot'
+import Login from './pages/Login'
+import { AuthProvider, useAuth } from './context/AuthContext'
+import ProtectedRoute from './components/ProtectedRoute'
 
-function App() {
+function AppContent() {
   const [isBotOpen, setIsBotOpen] = useState(false)
+  const { user } = useAuth()
 
   return (
     <BrowserRouter>
       <div className="flex min-h-screen flex-col bg-slate-50">
-        <Navbar isBotOpen={isBotOpen} setIsBotOpen={setIsBotOpen} />
-        <main className="flex-1">
+        {user && <Navbar isBotOpen={isBotOpen} setIsBotOpen={setIsBotOpen} />}
+        <main className={`flex-1 ${!user ? 'flex items-center justify-center bg-slate-100' : ''}`}>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/event" element={<EventDetails />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/payment" element={<Payment />} />
-            <Route path="/confirmation" element={<Confirmation />} />
-            <Route path="/about" element={<About />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/event" element={<ProtectedRoute><EventDetails /></ProtectedRoute>} />
+            <Route path="/booking" element={<ProtectedRoute><Booking /></ProtectedRoute>} />
+            <Route path="/payment" element={<ProtectedRoute><Payment /></ProtectedRoute>} />
+            <Route path="/confirmation" element={<ProtectedRoute><Confirmation /></ProtectedRoute>} />
+            <Route path="/about" element={<ProtectedRoute><About /></ProtectedRoute>} />
           </Routes>
         </main>
-        <EventBot isOpen={isBotOpen} setIsOpen={setIsBotOpen} />
-        <Footer />
+        {user && <EventBot isOpen={isBotOpen} setIsOpen={setIsBotOpen} />}
+        {user && <Footer />}
       </div>
     </BrowserRouter>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 

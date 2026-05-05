@@ -1,5 +1,6 @@
-import { NavLink, Link } from 'react-router-dom'
+import { NavLink, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useAuth } from '../context/AuthContext'
 
 const linkBase =
   'relative rounded-xl px-4 py-2.5 text-sm font-bold transition-all duration-300 group'
@@ -8,14 +9,19 @@ const active = 'bg-emerald-50/80 text-emerald-700 shadow-sm border border-emeral
 
 const navItems = [
   { to: '/', label: 'Home', end: true },
-  { to: '/event', label: 'Event Details' },
   { to: '/booking', label: 'Booking' },
-  { to: '/confirmation', label: 'Confirmation' },
   { to: '/about', label: 'About' },
 ]
 
 function Navbar({ isBotOpen, setIsBotOpen }) {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/20 bg-white/70 backdrop-blur-xl shadow-sm transition-all duration-300">
@@ -37,7 +43,7 @@ function Navbar({ isBotOpen, setIsBotOpen }) {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-2">
-          {navItems.map(({ to, label, end }) => (
+          {user && navItems.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -49,9 +55,55 @@ function Navbar({ isBotOpen, setIsBotOpen }) {
               {label}
             </NavLink>
           ))}
+
+          {user ? (
+            <div className="flex items-center gap-3 ml-4 pl-4 border-l border-slate-100">
+              <div className="text-right hidden lg:block">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Active User</p>
+                <p className="text-sm font-black text-slate-700 truncate max-w-[120px]">{user.name}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="rounded-xl bg-slate-900 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-200 transition-all hover:scale-[1.02] hover:bg-red-600 active:scale-[0.98]"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="ml-2 rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-100 transition-all hover:scale-[1.02] hover:bg-emerald-700 active:scale-[0.98]"
+            >
+              Login
+            </Link>
+          )}
           
           {/* Chat Icon Trigger */}
-          <div className="ml-4 pl-4 border-l border-slate-100">
+          {user && (
+            <div className="ml-4 pl-4 border-l border-slate-100">
+              <button
+                className={`chat-trigger ${isBotOpen ? 'active' : ''}`}
+                onClick={() => setIsBotOpen(!isBotOpen)}
+                title="Open Support Chat"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 5H18C19.1046 5 20 5.89543 20 7V10C20 11.1046 19.1046 12 18 12H15" />
+                  <path d="M9 5H6C4.89543 5 4 5.89543 4 7V10C4 11.1046 4.89543 12 6 12H9" />
+                  <path d="M4 12V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V12" />
+                  <path d="M9 19V21L12 19" />
+                  <circle cx="9" cy="9" r="1" fill="currentColor" />
+                  <circle cx="15" cy="9" r="1" fill="currentColor" />
+                </svg>
+                {!isBotOpen && <span className="notification-badge">1</span>}
+              </button>
+            </div>
+          )}
+        </nav>
+
+        {/* Mobile Actions */}
+        <div className="flex items-center gap-3 md:hidden">
+          {/* Mobile Chat Icon */}
+          {user && (
             <button
               className={`chat-trigger ${isBotOpen ? 'active' : ''}`}
               onClick={() => setIsBotOpen(!isBotOpen)}
@@ -67,27 +119,7 @@ function Navbar({ isBotOpen, setIsBotOpen }) {
               </svg>
               {!isBotOpen && <span className="notification-badge">1</span>}
             </button>
-          </div>
-        </nav>
-
-        {/* Mobile Actions */}
-        <div className="flex items-center gap-3 md:hidden">
-          {/* Mobile Chat Icon */}
-          <button
-            className={`chat-trigger ${isBotOpen ? 'active' : ''}`}
-            onClick={() => setIsBotOpen(!isBotOpen)}
-            title="Open Support Chat"
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M15 5H18C19.1046 5 20 5.89543 20 7V10C20 11.1046 19.1046 12 18 12H15" />
-              <path d="M9 5H6C4.89543 5 4 5.89543 4 7V10C4 11.1046 4.89543 12 6 12H9" />
-              <path d="M4 12V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V12" />
-              <path d="M9 19V21L12 19" />
-              <circle cx="9" cy="9" r="1" fill="currentColor" />
-              <circle cx="15" cy="9" r="1" fill="currentColor" />
-            </svg>
-            {!isBotOpen && <span className="notification-badge">1</span>}
-          </button>
+          )}
 
           {/* Mobile Hamburger Button */}
           <button
@@ -114,7 +146,7 @@ function Navbar({ isBotOpen, setIsBotOpen }) {
         }`}
       >
         <nav className="flex flex-col p-4 gap-2">
-          {navItems.map(({ to, label, end }) => (
+          {user && navItems.map(({ to, label, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -131,6 +163,22 @@ function Navbar({ isBotOpen, setIsBotOpen }) {
               {label}
             </NavLink>
           ))}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="mt-2 block rounded-xl bg-red-600 px-4 py-3 text-center text-base font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+            >
+              Logout ({user.name})
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setIsOpen(false)}
+              className="mt-2 block rounded-xl bg-emerald-600 px-4 py-3 text-center text-base font-bold text-white shadow-lg transition-all active:scale-[0.98]"
+            >
+              Login
+            </Link>
+          )}
         </nav>
       </div>
     </header>

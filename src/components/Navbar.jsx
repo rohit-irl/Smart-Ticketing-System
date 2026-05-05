@@ -14,7 +14,7 @@ const navItems = [
   { to: '/about', label: 'About' },
 ]
 
-function Navbar() {
+function Navbar({ isBotOpen, setIsBotOpen }) {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -49,23 +49,62 @@ function Navbar() {
               {label}
             </NavLink>
           ))}
+          
+          {/* Chat Icon Trigger */}
+          <div className="ml-4 pl-4 border-l border-slate-100">
+            <button
+              className={`chat-trigger ${isBotOpen ? 'active' : ''}`}
+              onClick={() => setIsBotOpen(!isBotOpen)}
+              title="Open Support Chat"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 5H18C19.1046 5 20 5.89543 20 7V10C20 11.1046 19.1046 12 18 12H15" />
+                <path d="M9 5H6C4.89543 5 4 5.89543 4 7V10C4 11.1046 4.89543 12 6 12H9" />
+                <path d="M4 12V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V12" />
+                <path d="M9 19V21L12 19" />
+                <circle cx="9" cy="9" r="1" fill="currentColor" />
+                <circle cx="15" cy="9" r="1" fill="currentColor" />
+              </svg>
+              {!isBotOpen && <span className="notification-badge">1</span>}
+            </button>
+          </div>
         </nav>
 
-        {/* Mobile Hamburger Button */}
-        <button
-          title="Toggle Menu"
-          aria-label="Toggle Menu"
-          className="md:hidden z-50 rounded-lg p-2 text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {isOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+        {/* Mobile Actions */}
+        <div className="flex items-center gap-3 md:hidden">
+          {/* Mobile Chat Icon */}
+          <button
+            className={`chat-trigger ${isBotOpen ? 'active' : ''}`}
+            onClick={() => setIsBotOpen(!isBotOpen)}
+            title="Open Support Chat"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 5H18C19.1046 5 20 5.89543 20 7V10C20 11.1046 19.1046 12 18 12H15" />
+              <path d="M9 5H6C4.89543 5 4 5.89543 4 7V10C4 11.1046 4.89543 12 6 12H9" />
+              <path d="M4 12V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V12" />
+              <path d="M9 19V21L12 19" />
+              <circle cx="9" cy="9" r="1" fill="currentColor" />
+              <circle cx="15" cy="9" r="1" fill="currentColor" />
+            </svg>
+            {!isBotOpen && <span className="notification-badge">1</span>}
+          </button>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            title="Toggle Menu"
+            aria-label="Toggle Menu"
+            className="z-50 rounded-lg p-2 text-slate-600 hover:bg-emerald-50 hover:text-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {isOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Nav Dropdown */}

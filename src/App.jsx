@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useState } from 'react'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Home from './pages/Home'
@@ -7,12 +8,15 @@ import Booking from './pages/Booking'
 import Confirmation from './pages/Confirmation'
 import About from './pages/About'
 import Payment from './pages/Payment'
+import EventBot from './components/EventBot'
 
 function App() {
+  const [isBotOpen, setIsBotOpen] = useState(false)
+
   return (
     <BrowserRouter>
       <div className="flex min-h-screen flex-col bg-slate-50">
-        <Navbar />
+        <Navbar isBotOpen={isBotOpen} setIsBotOpen={setIsBotOpen} />
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
@@ -23,6 +27,7 @@ function App() {
             <Route path="/about" element={<About />} />
           </Routes>
         </main>
+        <EventBot isOpen={isBotOpen} setIsOpen={setIsBotOpen} />
         <Footer />
       </div>
     </BrowserRouter>
